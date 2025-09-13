@@ -1,0 +1,233 @@
+﻿
+@{
+    ViewBag.Title = "AddChildren";
+}
+
+
+<h2>Insert Children</h2>
+
+<div class="container-fluid">
+    <form class="form-control bg-black bg-opacity-10">
+        <div class="row m-3">
+            <div class="col-md-6"><label>Name : </label><br><input type="text" class="form-control" placeholder="Name" id="name"></div>
+            <div class="col-md-6"><label>Age : </label><br><input type="number" class="form-control" placeholder="Age" id="age"></div>
+        </div>
+        <div class="row m-3">
+            <div class="col-md-6"><label>Gender : </label><br><input type="text" class="form-control" placeholder="Gender" id="gender"></div>
+            <div class="col-md-6"><label>Class : </label><br><input type="number" class="form-control" placeholder="Class" id="classs"></div>
+        </div>
+        <div class="row m-3">
+            <div class="col-md-6"><label>FatherName : </label><br><input type="text" class="form-control" placeholder="FatherName" id="fathername"></div>
+            <div class="col-md-6"><label>MotherName : </label><br><input type="text" class="form-control" placeholder="MotherName" id="mothername"></div>
+        </div>
+        <div class="row m-3">
+            <div class="col-md-6"><label>MobileNumber : </label><br><input type="number" class="form-control" placeholder="MobileNumber" id="mobilenumber"></div>
+            <div class="col-md-6"><label>Address : </label><br><textarea id="address" class="form-control" placeholder="Enter Address"></textarea></div>
+        </div>
+
+        <div class="row m-3">
+            <div class="col-md-6">
+                <select class="form-control"  id="ddlCountry" onchange="GetStateByCountry()">
+                </select>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control" id="ddlState">
+                    <option value="">--Select State--</option>
+                </select>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col-md-6">
+                <select class="form-control" id="ddlDepartment">
+                </select>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control" id="ddlDesigination">
+                </select>
+            </div>
+        </div>
+
+        <div class="row m-3">
+            <div class="col-md-12 d-flex justify-content-center m-4"><button type="submit" class="btn btn-outline-primary" onclick="addchildrendata()">Submit</button></div>
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+
+<script type="text/javascript">
+
+    //Country List..
+    $(document).ready(function () {
+        countrylist();
+        GetDepartment();
+        GetDesigination();
+    });
+
+    function addchildrendata() {
+        var name = $("#name").val();
+        var age = $("#age").val();
+        var gender = $("#gender").val();
+        var classs = $("#classs").val();
+        var fathername = $("#fathername").val();
+        var mothername = $("#mothername").val();
+        var mobilenumber = $("#mobilenumber").val();
+        var address = $("#address").val();
+        var country = $("#ddlCountry").val();
+        var state = $("#ddlState").val();
+        var dept = $("#ddlDepartment").val();
+        var deg = $("#ddlDesigination").val();
+
+        $.ajax({
+
+            type: "POST",
+            url: '/Home/InsertChildrenData',
+            data: JSON.stringify({
+                Name: name,
+                Age: age,
+                Gender: gender,
+                Classs: classs,
+                FatherName: fathername,
+                MotherName: mothername,
+                MobileNumber: mobilenumber,
+                Address: address,
+                Country: country,
+                State: state,
+                Department: dept,
+                Desigination:deg,
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    resetchildrendata() 
+                } else {
+                    alert("Error while saving children data.");
+                }
+                       
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    function resetchildrendata() {
+        $("#name").val('');
+        $("#age").val('');
+        $("#gender").val('');
+        $("#classs").val('');
+        $("#fathername").val('');
+        $("#mothername").val('');
+        $("#mobilenumber").val('');
+        $("#address").val('');
+       
+    }
+
+    
+    //get country list
+    function countrylist() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetCountryMaster',        
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status) {
+                    let $dropdown = $("#ddlCountry"); 
+
+                    $dropdown.empty();
+                    $dropdown.append('<option value="">--Select Country--</option>');
+
+                    response.Data.forEach(function (item) {
+                        $dropdown.append('<option value="' + item.countryid + '">' + item.countryname + '</option>');
+                    });
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //Get state 
+    function GetStateByCountry() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetStateMaster',
+            data: { CountryId: $("#ddlCountry").val()},
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status) {
+                    let $dropdown = $("#ddlState");
+
+                    $dropdown.empty();
+                    $dropdown.append('<option value="">--Select State--</option>');
+
+                    response.Data.forEach(function (item) {
+                        $dropdown.append('<option value="' + item.stateid + '">' + item.statename + '</option>');
+                    });
+                }
+},
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //get depertment
+    function GetDepartment() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetDepartment',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                let $dropdown = $("#ddlDepartment");
+
+                $dropdown.empty();
+                $dropdown.append('<option value="">--Select Department--</option>');
+
+                response.Data.forEach(function (item) {
+                    $dropdown.append('<option value="' + item.deptid + '">' + item.deptname + '</option>');
+                });
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //Get Desigination
+    function GetDesigination() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetDesigination',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                
+                let $dropdown = $("#ddlDesigination");
+
+                $dropdown.empty();
+                $dropdown.append('<option value="">--Select Desigination--</option>');
+
+                response.Data.forEach(function (item) {
+                    $dropdown.append('<option value="' + item.degid + '">' + item.degname + '</option>');
+                });
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+
+</script>
+
+
+
+
+

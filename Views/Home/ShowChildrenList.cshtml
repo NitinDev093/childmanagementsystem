@@ -1,0 +1,373 @@
+﻿
+@{
+    ViewBag.Title = "ShowChildrenList";
+}
+@model List<childmanagementsystem.Models.ChildData_1_modal>
+
+<style>
+    th {
+        color: blue;
+    }
+</style>
+
+<h2>Children Data</h2>
+
+@* yeha humne strongly typed view ka use kiyea hai yeh data modal se aa raha hai *@
+
+<h1>Strongly typed view</h1>
+<table class="table table-bordered">
+
+    <thead>
+        <tr>
+            <th>Sr.No</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Class</th>
+            <th>Father Name</th>
+            <th>Mother Name</th>
+            <th>Mobile Number</th>
+            <th>Address</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>Department</th>
+            <th>Desigination</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Sr_No</td>
+                <td>@item.Name</td>
+                <td>@item.Age</td>
+                <td>@item.Gender</td>
+                <td>@item.Classs</td>
+                <td>@item.FatherName</td>
+                <td>@item.MotherName</td>
+                <td>@item.MobileNumber</td>
+                <td>@item.Address</td>
+                <td>@item.Country</td>
+                <td>@item.State</td>
+                <td>@item.Department</td>
+                <td>@item.Desigination</td>
+                <td>
+                    <button type="submit" class="btn btn-outline-primary" onclick="updatechildrendata('@item.Id',
+                     '@item.Name', '@item.Age', '@item.Gender', '@item.Classs', '@item.FatherName', '@item.MotherName',
+                      '@item.MobileNumber', '@item.Address', '@item.CountryId', '@item.StateId'
+                       ,'@item.DepartmentId','@item.DesiginationId')">Edit</button>
+                    <button type="submit" class="btn btn-outline-danger" onclick="deletechildrendata('@item.Id')">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+
+<!--is table me data humne ajax ke through print karwaya hai-->
+
+<h1>Using ajax and jquery</h1>
+<table class="table table-bordered" id="listonload">
+
+    <thead>
+        <tr>
+            <th>Sr.No</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Class</th>
+            <th>Father Name</th>
+            <th>Mother Name</th>
+            <th>Mobile Number</th>
+            <th>Address</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+
+</table>
+
+
+<!--Update Modal -->
+<div class="modal fade" id="editChildrenDataModel" tabindex="-1" aria-labelledby="editChildrenDataModel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Children Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="form-control bg-black bg-opacity-10">
+                    <div class="row m-3">
+                        <div class="col-md-6"><label>Name : </label><br><input type="text" class="form-control" placeholder="Name" id="name"></div>
+                        <div class="col-md-6"><label>Age : </label><br><input type="number" class="form-control" placeholder="Age" id="age"></div>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-md-6"><label>Gender : </label><br><input type="text" class="form-control" placeholder="Gender" id="gender"></div>
+                        <div class="col-md-6"><label>Class : </label><br><input type="number" class="form-control" placeholder="Class" id="classs"></div>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-md-6"><label>FatherName : </label><br><input type="text" class="form-control" placeholder="FatherName" id="fathername"></div>
+                        <div class="col-md-6"><label>MotherName : </label><br><input type="text" class="form-control" placeholder="MotherName" id="mothername"></div>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-md-6"><label>MobileNumber : </label><br><input type="number" class="form-control" placeholder="MobileNumber" id="mobilenumber"></div>
+                        <div class="col-md-6"><label>Address : </label><br><textarea id="address" class="form-control" placeholder="Enter Address"></textarea></div>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-md-6"><select class="form-control" id="ddlcountry"  onchange="GetStateByCountry()">--Selelct Country--</select></div>
+                        <div class="col-md-6"><select class="form-control" id="ddlState">--Select State--</select></div>
+                    </div>
+                    <div class="row m-3">
+                        <div class="col-md-6"><select class="form-control" id="ddldepartment">--Selelct Department--</select></div>
+                        <div class="col-md-6"><select  class="form-control" id="ddldesigination">--Selelct Desigination--</select></div>
+                    </div>
+                    <input type="hidden" id="hiddenId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updatechildrenitem()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        childrendatalist();
+        countrylist();
+        GetDepartment();
+        GetDesigination();
+        
+    });
+    //children data list (iska action method ShowChildrenListt hai yeha data humne ajax se print karwaya hai).................
+    function childrendatalist() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/ShowChildrenListt',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status) {
+                    let rows = "";
+                    response.Data.forEach(cm => {
+                        rows += `<tr>
+        <td>${cm.Sr_No}</td>
+        <td>${cm.Name}</td>
+        <td>${cm.Age}</td>
+        <td>${cm.Gender}</td>
+        <td>${cm.Classs}</td>
+        <td>${cm.FatherName}</td>
+        <td>${cm.MotherName}</td>
+        <td>${cm.MobileNumber}</td>
+        <td>${cm.Address}</td>
+        <td>
+
+           <button class="btn btn-primary" onclick="updatechildrendata('${cm.Id}','${cm.Name}', '${cm.Age}', '${cm.Gender}', '${cm.Classs}', '${cm.FatherName}', '${cm.MotherName}',
+                      '${cm.MobileNumber}','${cm.Address}')">Edit</button>
+          <button class="btn btn-danger" onclick="deletechildrendata('${cm.Id}')">Delete</button>
+
+
+       </td>
+    </tr>`;
+                    });
+                    $("#listonload tbody").html(rows);
+                } else {
+                    alert("Failed to load children data.");
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+
+    //delete children data...........
+    function deletechildrendata(Id) {
+        //alert(Id); it is for checking that id value is coming or not
+        $.ajax({
+            type: "GET",
+            url: '/Home/DeleteChildrenData',
+            data: { Id: Id },//Controller ID:Modal ID
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    window.location.href = "/Home/ShowChildrenList"; //we call list method to get back list.
+
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //update children data..
+    function updatechildrendata(idd, namee, agee, genderr, classss, fathernamee, mothernamee, mobilenumberr, addresss, countryId, StateId, DepartmentId, DesiginationId) {
+
+        $("#editChildrenDataModel").modal('show');
+      
+                $("#name").val(namee);
+                $("#age").val(agee);
+                $("#gender").val(genderr);
+                $("#classs").val(classss);
+                $("#fathername").val(fathernamee);
+                $("#mothername").val(mothernamee);
+                $("#mobilenumber").val(mobilenumberr);
+                $("#address").val(addresss);
+                $("#hiddenId").val(idd);
+        $("#ddlcountry").val(countryId).trigger("change");
+       // $("#ddlState").val(StateId);
+        $("#ddldepartment").val(DepartmentId);
+        $("#ddldesigination").val(DesiginationId);
+        
+        
+    }
+    function updatechildrenitem() {
+        $.ajax({
+
+            type: "POST",
+            url: '/Home/UpdateChildrenData',
+            data: JSON.stringify({
+                Name :$("#name").val(),
+                Age: $("#age").val(),
+                Gender:$("#gender").val(),
+                Classs: $("#classs").val(),
+                FatherName: $("#fathername").val(),
+                MotherName: $("#mothername").val(),
+                MobileNumber: $("#mobilenumber").val(),
+                Address: $("#address").val(),
+                Id: $("#hiddenId").val(),
+                Country: $("#ddlcountry").val(),
+                State: $("#ddlState").val(),
+                Department: $("#ddldepartment").val(),
+                Desigination: $("#ddldesigination").val(),
+
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message);
+                    $("#editChildrenDataModel").modal('hide');
+                    window.location.href = "/Home/ShowChildrenList";
+                } else {
+                    alert("Error while updating children data.");
+                }
+
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //update country list
+    function countrylist() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetCountryMaster',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status) {
+                    let $dropdown = $("#ddlcountry");
+
+                    $dropdown.empty();
+                    $dropdown.append('<option value="">--Select Country--</option>');
+
+                    response.Data.forEach(function (item) {
+                        $dropdown.append('<option value="' + item.countryid + '">' + item.countryname + '</option>');
+                    });
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //update state
+    function GetStateByCountry() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetStateMaster',
+            data: { CountryId: $("#ddlcountry").val() },
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status) {
+                    let $dropdown = $("#ddlState");
+
+                    $dropdown.empty();
+                    $dropdown.append('<option value="">--Select State--</option>');
+
+                    response.Data.forEach(function (item) {
+                        $dropdown.append('<option value="' + item.stateid + '">' + item.statename + '</option>');
+                    });
+                }
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //update depertment
+    function GetDepartment() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetDepartment',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                let $dropdown = $("#ddldepartment");
+
+                $dropdown.empty();
+                $dropdown.append('<option value="">--Select Department--</option>');
+
+                response.Data.forEach(function (item) {
+                    $dropdown.append('<option value="' + item.deptid + '">' + item.deptname + '</option>');
+                });
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+    //update Desigination
+    function GetDesigination() {
+        $.ajax({
+            type: "GET",
+            url: '/Home/GetDesigination',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+
+                let $dropdown = $("#ddldesigination");
+
+                $dropdown.empty();
+                $dropdown.append('<option value="">--Select Desigination--</option>');
+
+                response.Data.forEach(function (item) {
+                    $dropdown.append('<option value="' + item.degid + '">' + item.degname + '</option>');
+                });
+            },
+            error: function () {
+                alert("Server error.");
+            }
+        });
+    }
+
+
+</script>
+
+
+
