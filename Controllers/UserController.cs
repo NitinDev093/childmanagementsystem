@@ -60,7 +60,7 @@ namespace childmanagementsystem.Controllers
         }
 
         //Get
-        public ActionResult SignUp(UserData_Model udm)
+        public ActionResult SignUp()
         {
             return View();
         }

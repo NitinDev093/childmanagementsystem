@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form class="validation" novalidate>
+
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Enter First Name" required pattern="^[A-Za-z\s]{3,20}$" id="firstName" />
+            <div class="invalid-feedback">Please Enter valid First Name</div>
+            <div class="valid-feedback">Looks Good</div>
+        </div>
+        <div class="col-md-6">
+            <input type="email" class="form-control" placeholder="Enter Email" required
+                   pattern="^[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\\.[A-Za-z]{2,}$" id="email" />
+            <div class="invalid-feedback">Please Enter valid Email</div>
+            <div class="valid-feedback">Looks Good</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <input type="password" class="form-control" placeholder="Enter password" required pattern="^[A-Za-z\s]{3,20}$" id="password" />
+            <div class="invalid-feedback">Please Enter valid password</div>
+            <div class="valid-feedback">Looks Good</div>
+        </div>
+        <div class="col-md-6">
+            <input type="password" class="form-control" placeholder="Confirm Password" required
+                   pattern="^[a-zA-Z0-9._%+-]+[a-zA-Z0-9.-]+\\.[A-Za-z]{2,}$" id="conPassword" />
+            <div class="invalid-feedback">Please Enter valid confirm password</div>
+            <div class="valid-feedback">Looks Good</div>
+        </div>
+    </div>
+
+    <button type="button" onclick="ValidateData()">Submit</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        attachLiveValidation("#firstName");
+        attachLiveValidation("#email");
+    });
+
+    function attachLiveValidation(selector) {
+        $(selector).on("input", function () {
+            let input = this;
+            if (input.checkValidity()) {
+                //checkValidity() :-yeh required,min,max,pattern jaise validation ko check karta hai
+                $(input).removeClass("is-invalid").addClass("is-valid");
+            } else {
+                $(input).removeClass("is-valid").addClass("is-invalid");
+            }
+        });
+    }
+
+    function ValidateData() {
+        
+        var form = document.querySelector('.validation');
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated');
+            return false;
+        }
+    }
+
+</script>

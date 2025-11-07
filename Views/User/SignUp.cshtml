@@ -4,7 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
 <div class="container">
     <div class="row" style="height:76vh">
         <div class="col-lg-6 h-100 d-flex align-items-center">
@@ -22,13 +21,13 @@
                         @* For Regular Expression validation Need to user Pattern attrubut in Controls like pattern="^\[A-Za-z]$" *@
                         <input type="text" id="txtFirstname" class="form-control w-100" placeholder="First name" autofocus="" required="" />
                         <div class="invalid-feedback">
-                           Please provide valid Frist Name
+                            Please provide valid Frist Name
                         </div>
                         @*<div class="valid-feedback">
-                           Thannkis
-                        </div>*@
+                               Thannkis
+                            </div>*@
                     </div>
-                 
+
                     <div class="col-lg-6">
                         <input type="text" id="txtLastname" class="form-control w-100" placeholder="Last name" autofocus="" required="" />
                         <div class="invalid-feedback">
@@ -39,7 +38,7 @@
 
                 <div class="row mb-2">
                     <div class="col-lg-6">
-                        <select id="ddlgender" class="form-control w-100 text-muted">
+                        <select id="ddlgender" class="form-control w-100" required>
                             <option value="">--Select Gender--</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -68,8 +67,8 @@
                 </div>
 
                 <div class="row mb-2">
-                     <div class="col-lg-6">
-                        <input type="password" id="cpassword" class="form-control w-100" placeholder="Password" autofocus="" required=""/>
+                    <div class="col-lg-6">
+                        <input type="password" id="cpassword" class="form-control w-100" placeholder="Password" autofocus="" required="" />
                     </div>
                     <div class="col-lg-6">
                         <input type="password" id="conpassword" class="form-control w-100" placeholder="Confirm Password" autofocus="" required="" />
@@ -81,7 +80,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end g-2 w-100">
-                    <div><button class="btn btn-warning"  type="button" onclick="resetuserdata()">Reset</button></div>
+                    <div><button class="btn btn-warning" type="button" onclick="resetuserdata()">Reset</button></div>
                     <div style="margin-left:5px"><button class="btn btn-primary" type="button" onclick="validateNSignup()">Sign up</button></div>
                 </div>
             </form>
@@ -90,6 +89,7 @@
 
     </div>
 </div>
+
 
 
 <script type="text/javascript">
@@ -131,7 +131,7 @@
                 email: eml,
                 password: pass,
                 confirmpassword: conpass,
-                createdby:"Nitin",
+                createdby: "Nitin",
             }),
             contentType: "application/json; charset=utf-8",
             success: function (response) {
@@ -139,7 +139,7 @@
                     alert(response.message);
                     resetuserdata();
                     window.location.href = "/User/Login";
-                    
+
                 } else {
                     alert("Error while saving  data.");
                 }
@@ -153,6 +153,8 @@
     }
 
     function resetuserdata() {
+        var form = document.querySelector('.needs-validation');
+        form.classList.remove('was-validated');
         $("#txtFirstname").val('');
         $("#txtLastname").val('');
         $("#ddlgender").val('');
@@ -165,4 +167,4 @@
 
     
 
-    </script>
+</script>
